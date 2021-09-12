@@ -16,5 +16,5 @@ async fn health_check() {
 
 fn spawn_app() {
     let server = zero2prod::run();
-    let _ = async_std::task::spawn(server);
+    let _ = async_std::task::spawn(server.listen("localhost:8080"));
 }

@@ -1,11 +1,12 @@
-use tide::{Request, Response};
+use tide::{Request, Response, StatusCode};
 
-pub fn run() -> tide::Server<()> {
-    let mut app = tide::new();
-    app.at("/health").get(health);
-    app
+async fn health(_req: Request<()>) -> tide::Result {
+    Ok(Response::new(StatusCode::Ok))
 }
 
-async fn health(_req: Request<()>) -> tide::Result<Response> {
-    Ok(Response::builder(200).build())
+pub async fn run(address: &str) -> tide::Result<()> {
+    let mut app = tide::new();
+    app.at("/health").get(health);
+    app.listen(address).await?;
+    Ok(())
 }

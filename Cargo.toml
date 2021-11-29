@@ -20,6 +20,10 @@ config = "0.11.0"
 tide-sqlx = "0.6.1"
 chrono = "0.4.19"
 uuid = { version = "0.8.2", features = ["serde", "v4" ] }
+env_logger = "0.9.0"
+log = "0.4.14"
+tracing = { version = "0.1.29", features = ["log"] }
+tracing-futures = "0.2.5"
 
 [dependencies.sqlx]
 version = "0.5.7"

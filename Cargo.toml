@@ -11,9 +11,23 @@ path = "src/main.rs"
 name = "zero2prod"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 tide = "0.16.0"
 async-std = { version = "1.8.0", features = ["attributes", "tokio1"] }
 serde = { version = "1.0", features = ["derive"] }
 reqwest = "0.11.4"
+config = "0.11.0"
+tide-sqlx = "0.6.1"
+chrono = "0.4.19"
+uuid = { version = "0.8.2", features = ["serde", "v4" ] }
+
+[dependencies.sqlx]
+version = "0.5.7"
+features = [
+  "runtime-async-std-native-tls",
+  "macros",
+  "postgres",
+  "uuid",
+  "chrono",
+  "migrate"
+]

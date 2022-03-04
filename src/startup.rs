@@ -3,10 +3,12 @@ use sqlx::PgPool;
 use std::net::TcpListener;
 use tide::prelude::*;
 use tide_sqlx::SQLxMiddleware;
+use tide_tracing::TraceMiddleware;
 
 pub async fn run(listener: TcpListener, pool: PgPool) -> tide::Result<()> {
     let mut app = tide::new();
     app.with(SQLxMiddleware::from(pool));
+    app.with(TraceMiddleware::new());
     app.at("/health").get(health_check);
     app.at("/subscriptions").post(subscribe);
     let mut listener = app.bind(listener).await?;

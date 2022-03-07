@@ -14,14 +14,14 @@ async fn main() -> Result<(), tide::Error> {
     let configuration = get_configuration().expect("Failed to read configuration file.");
 
     // fetch port from configuration file
-    let address = format!("127.0.0.1:{}", configuration.application_port);
+    let address = format!("{}:{}", configuration.application.host, configuration.application.port);
     let listener = TcpListener::bind(address).expect("Couldn't bind port");
 
     // create database connection pool
     let pg_pool = PgPoolOptions::new()
         .max_connections(5)
-        .connect(configuration.database.connection_string().expose_secret())
-        .await?;
+        .connect_lazy(configuration.database.connection_string().expose_secret())
+        .expect("Failed to create Postgres connection pool.");
 
     // Start the server
     run(listener, pg_pool).await?;

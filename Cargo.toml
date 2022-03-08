@@ -29,6 +29,8 @@ once_cell = "1"
 secrecy = { version = "0.8", features = ["serde"] }
 async-trait = "0.1.52"
 serde-aux = "3"
+unicode-segmentation = "1"
+claim = "0.5"
 
 [dependencies.sqlx]
 version = "0.5.7"

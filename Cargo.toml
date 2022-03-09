@@ -31,6 +31,7 @@ async-trait = "0.1.52"
 serde-aux = "3"
 unicode-segmentation = "1"
 claim = "0.5"
+validator = "0.14"
 
 [dependencies.sqlx]
 version = "0.5.7"
@@ -43,3 +44,8 @@ features = [
   "migrate",
   "offline"
 ]
+
+[dev-dependencies]
+fake = "~2.3"
+quickcheck = "0.9.2"
+quickcheck_macros = "0.9.1"

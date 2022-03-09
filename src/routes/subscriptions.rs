@@ -1,17 +1,28 @@
-use crate::domain::{NewSubscriber, SubscriberName};
+use crate::domain::{NewSubscriber, SubscriberEmail, SubscriberName};
 use async_std::sync::RwLockWriteGuard;
 use serde::Deserialize;
 use sqlx::types::{chrono::Utc, Uuid};
 use sqlx::Acquire;
 use sqlx::Postgres;
+use std::convert::{TryFrom, TryInto};
 use tide::{Request, Response, StatusCode};
 use tide_sqlx::{ConnectionWrapInner, SQLxRequestExt};
-use tracing::{field, Span, Subscriber};
+use tracing::{field, Span};
 
 #[derive(Deserialize, Debug)]
 struct FormData {
     name: String,
     email: String,
+}
+
+impl TryFrom<FormData> for NewSubscriber {
+    type Error = String;
+
+    fn try_from(value: FormData) -> Result<Self, Self::Error> {
+        let name = SubscriberName::parse(value.name)?;
+        let email = SubscriberEmail::parse(value.email)?;
+        Ok(Self { email, name })
+    }
 }
 
 #[tracing::instrument(
@@ -28,7 +39,7 @@ pub async fn insert_subscriber(
             values ($1, $2, $3, $4)
             "#,
         Uuid::new_v4(),
-        new_sub.email,
+        new_sub.email.as_ref(),
         new_sub.name.as_ref(),
         Utc::now()
     )
@@ -57,16 +68,10 @@ pub async fn subscribe(mut req: Request<()>) -> tide::Result {
         span.record("subscriber_email", &form.email.as_str());
         span.record("subscriber_name", &form.name.as_str());
 
-        let name = match SubscriberName::parse(form.name) {
-            Ok(name) => name,
+        let new_subscriber = match form.try_into() {
+            Ok(subscriber) => subscriber,
             Err(_) => return Ok(Response::new(StatusCode::BadRequest)),
         };
-
-        let new_subscriber = NewSubscriber {
-            email: form.email,
-            name,
-        };
-
         match insert_subscriber(pg_conn, &new_subscriber).await {
             Ok(_) => Ok(Response::new(StatusCode::Ok)),
             Err(_) => Ok(Response::new(StatusCode::BadRequest)),

@@ -15,7 +15,8 @@ name = "zero2prod"
 tide = "0.16.0"
 async-std = { version = "1.8.0", features = ["attributes", "tokio1"] }
 serde = { version = "1.0", features = ["derive"] }
-reqwest = "0.11.4"
+serde_json = "1"
+reqwest = { version = "0.11.4", features = ["json"] }
 config = "0.11.0"
 tide-sqlx = "0.6.1"
 chrono = "0.4.19"
@@ -49,3 +50,4 @@ features = [
 fake = "~2.3"
 quickcheck = "0.9.2"
 quickcheck_macros = "0.9.1"
+wiremock = "0.5"

@@ -3,6 +3,7 @@ use sqlx::types::Uuid;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
 use zero2prod::configuration::{get_configuration, DatabaseSettings};
+use zero2prod::email_client::EmailClient;
 use zero2prod::telemetry::{get_subscriber, init_subscriber};
 
 static TRACING: Lazy<()> = Lazy::new(|| {
@@ -139,7 +140,20 @@ async fn spawn_app() -> TestApp {
     // Configure connection pool
     let pg_pool = configure_database(&configuration.database).await;
 
-    let server = zero2prod::startup::run(listener, pg_pool.clone());
+    // Configure email client
+    let sender_email = configuration
+        .email_client
+        .sender()
+        .expect("Invalid sender address");
+    let timeout = configuration.email_client.timeout();
+    let email_client = EmailClient::new(
+        configuration.email_client.base_url,
+        sender_email,
+        configuration.email_client.authorization_token,
+        timeout,
+    );
+
+    let server = zero2prod::startup::run(listener, pg_pool.clone(), email_client);
     let _ = async_std::task::spawn(server);
 
     TestApp { address, pg_pool }

@@ -1,4 +1,5 @@
 use crate::domain::{NewSubscriber, SubscriberEmail, SubscriberName};
+use crate::startup::State;
 use async_std::sync::RwLockWriteGuard;
 use serde::Deserialize;
 use sqlx::types::{chrono::Utc, Uuid};
@@ -60,7 +61,7 @@ pub async fn insert_subscriber(
         subscriber_name = field::Empty
     )
 )]
-pub async fn subscribe(mut req: Request<()>) -> tide::Result {
+pub async fn subscribe(mut req: Request<State>) -> tide::Result {
     if let Ok(result) = req.body_form().await {
         let form: FormData = result;
         let pg_conn = req.sqlx_conn::<Postgres>().await;

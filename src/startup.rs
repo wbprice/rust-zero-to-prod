@@ -12,6 +12,7 @@ use tide_tracing::TraceMiddleware;
 #[derive(Clone)]
 pub struct State {
     pub email_client: Arc<EmailClient>,
+    pub base_url: String,
 }
 
 pub fn get_connection_pool(configuration: &DatabaseSettings) -> PgPool {
@@ -23,9 +24,11 @@ pub fn get_connection_pool(configuration: &DatabaseSettings) -> PgPool {
 pub fn register_server(
     pool: PgPool,
     email_client: EmailClient,
+    base_url: String,
 ) -> Result<tide::Server<State>, std::io::Error> {
     let mut app = tide::with_state(State {
         email_client: Arc::new(email_client),
+        base_url: base_url,
     });
     app.with(SQLxMiddleware::from(pool));
     app.with(TraceMiddleware::new());
@@ -64,7 +67,12 @@ impl Application {
         );
         let listener = TcpListener::bind(address).expect("Couldn't bind port");
         let port = listener.local_addr().unwrap().port();
-        let server = register_server(connection_pool, email_client).unwrap();
+        let server = register_server(
+            connection_pool,
+            email_client,
+            configuration.application.base_url,
+        )
+        .unwrap();
 
         Ok(Self {
             port,

@@ -61,8 +61,9 @@ pub async fn insert_subscriber(
 pub async fn send_confirmation_email(
     email_client: &EmailClient,
     new_subscriber: NewSubscriber,
+    base_url: &String,
 ) -> Result<(), reqwest::Error> {
-    let confirmation_link = "https://my-api.com/subscriptions/confirm";
+    let confirmation_link = format!("{}/subscriptions/confirm", base_url);
 
     let plain_body = &format!(
         "Welcome to our newsletter!\nVisit {} to confirm your subscription.",
@@ -91,6 +92,7 @@ pub async fn subscribe(mut req: Request<State>) -> tide::Result {
     if let Ok(result) = req.body_form().await {
         let form: FormData = result;
         let email_client = &req.state().email_client;
+        let base_url = &req.state().base_url;
         let pg_conn = req.sqlx_conn::<Postgres>().await;
         let span = Span::current();
         span.record("subscriber_email", &form.email.as_str());
@@ -105,7 +107,7 @@ pub async fn subscribe(mut req: Request<State>) -> tide::Result {
             return Ok(Response::new(StatusCode::BadRequest));
         }
 
-        if send_confirmation_email(&email_client, new_subscriber)
+        if send_confirmation_email(&email_client, new_subscriber, base_url)
             .await
             .is_err()
         {

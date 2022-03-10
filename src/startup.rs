@@ -1,6 +1,6 @@
 use crate::configuration::{DatabaseSettings, Settings};
 use crate::email_client::EmailClient;
-use crate::routes::{health_check, subscribe};
+use crate::routes::{confirm, health_check, subscribe};
 use async_std::sync::Arc;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
@@ -31,7 +31,7 @@ pub fn register_server(
     app.with(TraceMiddleware::new());
     app.at("/health").get(health_check);
     app.at("/subscriptions").post(subscribe);
-
+    app.at("/subscriptions/confirm").get(confirm);
     Ok(app)
 }
 

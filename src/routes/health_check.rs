@@ -1,6 +1,5 @@
-use crate::startup::State;
-use tide::{Request, Response, Result, StatusCode};
+use actix_web::HttpResponse;
 
-pub async fn health_check(_req: Request<State>) -> Result {
-    Ok(Response::new(StatusCode::Ok))
+pub async fn health_check() -> HttpResponse {
+    HttpResponse::Ok().finish()
 }

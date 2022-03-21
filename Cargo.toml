@@ -12,44 +12,34 @@ name = "zero2prod"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-tide = "0.16.0"
-async-std = { version = "1.8.0", features = ["attributes", "tokio1"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1"
-reqwest = { version = "0.11.4", features = ["json"] }
-config = "0.11.0"
-tide-sqlx = "0.6.1"
-chrono = "0.4.19"
-uuid = { version = "0.8.2", features = ["serde", "v4" ] }
-tide-tracing = "0.0.11"
-tracing = { version = "0.1", features = ["log"] }
-tracing-log = { version = "0.1.2", features = ["env_logger"]}
+actix-web = "4"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+serde = "1.0.115"
+config = { version = "0.11", default-features = false, features = ["yaml"] }
+sqlx = { version = "0.5.5", default-features = false, features = [ "runtime-actix-rustls", "macros", "postgres", "uuid", "chrono", "migrate", "offline"] }
+uuid = { version = "0.8.1", features = ["v4"] }
+chrono = "0.4.15"
+reqwest = { version = "0.11", default-features = false, features = ["json", "rustls-tls"] }
+log = "0.4"
+tracing = "0.1.19"
 tracing-subscriber = { version = "0.3", features = ["registry", "env-filter"] }
-tracing-bunyan-formatter = "0.3"
-once_cell = "1"
-secrecy = { version = "0.8", features = ["serde"] }
-async-trait = "0.1.52"
+tracing-bunyan-formatter = "0.3.1"
+tracing-log = "0.1.1"
 serde-aux = "3"
-unicode-segmentation = "1"
-claim = "0.5"
-validator = "0.14"
-linkify = "0.8"
+unicode-segmentation = "1.7.1"
+validator = "0.14.0"
 rand = { version = "0.8", features=["std_rng"] }
-
-[dependencies.sqlx]
-version = "0.5.7"
-features = [
-  "runtime-async-std-native-tls",
-  "macros",
-  "postgres",
-  "uuid",
-  "chrono",
-  "migrate",
-  "offline"
-]
+anyhow = "1.0.40"
+tracing-actix-web = "0.5"
+secrecy = { version = "0.8", features = ["serde"] }
 
 [dev-dependencies]
-fake = "~2.3"
+once_cell = "1.7.2"
+claim = "0.5.0"
 quickcheck = "0.9.2"
 quickcheck_macros = "0.9.1"
+fake = "~2.3.0"
 wiremock = "0.5"
+serde_json = "1.0.61"
+reqwest = { version = "0.11", features = ["json"] }
+linkify = "0.8.0"

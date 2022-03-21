@@ -1,1 +1,1 @@
-# tide-zero-to-prod
+# rust-zero-to-prod
